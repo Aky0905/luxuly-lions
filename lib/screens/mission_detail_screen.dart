@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/coupon.dart';
 import '../state/coupon_state.dart';
+import 'mission_verify_screen.dart'; // ✅ 인증 화면
 
 class MissionDetailScreen extends StatefulWidget {
   final String title;
@@ -43,7 +44,6 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
     if (_now < _max) {
       setState(() => _now++);
       if (_now >= _max) {
-        // 정원 채우자마자 안내
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('정원이 모두 모였어요! 쿠폰을 받을 수 있어요.')),
         );
@@ -51,12 +51,21 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
     }
   }
 
+  // ✅ 바코드용 코드/ID 생성해서 쿠폰 저장
   void _downloadCoupon() {
+    final now = DateTime.now();
+    final ts = now.millisecondsSinceEpoch.toString();
+    final code =
+        'LM-${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}-${ts.substring(ts.length - 6)}';
+
     final coupon = Coupon(
+      id: 'coupon-$ts',
       title: '${widget.title} 할인쿠폰',
       description: '${widget.place}에서 사용할 수 있는 ${widget.point} 쿠폰',
-      issuedAt: DateTime.now(),
+      issuedAt: now,
+      code: code,
     );
+
     CouponState().addCoupon(coupon);
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -64,10 +73,27 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
     );
   }
 
+  Future<void> _goVerify() async {
+    final reward =
+        int.tryParse(widget.point.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+    final done = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) =>
+            MissionVerifyScreen(title: widget.title, rewardPoint: reward),
+      ),
+    );
+    if (done == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('미션 인증 완료! +${reward}P 적립')),
+      );
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('홈')),
+      appBar: AppBar(title: const Text('미션')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -79,7 +105,9 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    Text(widget.title,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 6),
                     Row(
                       children: [
@@ -92,12 +120,14 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF22C55E).withOpacity(.12),
+                  color: const Color(0xFFEDE9FE), // ✅ 연보라 톤 통일
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: const Text('쉬움', style: TextStyle(fontWeight: FontWeight.w700)),
+                child: const Text('쉬움',
+                    style: TextStyle(fontWeight: FontWeight.w700)),
               ),
             ],
           ),
@@ -107,18 +137,17 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFF3E8FF), // 연보라
+              color: const Color(0xFFF3E8FF),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('특별 할인 혜택', style: TextStyle(fontWeight: FontWeight.w800)),
+                const Text('특별 할인 혜택',
+                    style: TextStyle(fontWeight: FontWeight.w800)),
                 const SizedBox(height: 6),
                 const Text('코엑스 아쿠아리움에서 20% 할인!'),
                 const SizedBox(height: 12),
-
-                // ✅ 정원 찼을 때만 다운로드 버튼 표시
                 if (_isFull)
                   FilledButton.icon(
                     onPressed: _downloadCoupon,
@@ -156,21 +185,27 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
           // 참가자 리스트(샘플)
           Text('현재 참가자 ($_now명)'),
           const SizedBox(height: 8),
-          const ListTile(leading: CircleAvatar(child: Text('A')), title: Text('참가자 1')),
-          const ListTile(leading: CircleAvatar(child: Text('B')), title: Text('참가자 2')),
+          const ListTile(
+              leading: CircleAvatar(child: Text('A')), title: Text('참가자 1')),
+          const ListTile(
+              leading: CircleAvatar(child: Text('B')), title: Text('참가자 2')),
           const SizedBox(height: 16),
 
           // 액션 버튼
           FilledButton(
-            onPressed: _isFull ? null : _join, // 꽉 차면 비활성화
-            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+            onPressed: _isFull ? null : _join,
+            style:
+            FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
             child: Text(_isFull ? '정원 마감' : '일행 모집 참가하기'),
           ),
           const SizedBox(height: 8),
-          OutlinedButton(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-            child: const Text('혼자서 도전하기'),
+
+          // 문구 통일: "미션 인증하기"
+          FilledButton.tonal(
+            onPressed: _goVerify,
+            style:
+            FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+            child: const Text('미션 인증하기'),
           ),
         ],
       ),
