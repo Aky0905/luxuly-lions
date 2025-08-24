@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // FlutterFire CLI가 생성한 파일
-import 'shell.dart'; // 앱 시작 화면(AppShell)
+import 'firebase_options.dart';
+import 'shell.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // 🔹 Firebase 초기화
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   runApp(const MyApp());
 }
 
@@ -25,19 +22,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
 
-        // 🎨 메인 팔레트 (하늘색 계열)
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF4FC3F7),
           brightness: Brightness.light,
         ),
 
-        // 배경 톤 살짝 밝게
         scaffoldBackgroundColor: const Color(0xFFF7FAFF),
-
-        // ✅ 폰트 (pubspec.yaml에 Pretendard 등록되어 있어야 함)
         fontFamily: 'Pretendard',
 
-        // ✅ AppBar
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -50,7 +42,7 @@ class MyApp extends StatelessWidget {
           iconTheme: IconThemeData(color: Colors.black54),
         ),
 
-        // ✅ 카드
+        // ⬇️ CardThemeData → CardTheme
         cardTheme: const CardThemeData(
           elevation: 0,
           margin: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
@@ -60,7 +52,6 @@ class MyApp extends StatelessWidget {
           color: Colors.white,
         ),
 
-        // ✅ 버튼들 둥글게
         filledButtonTheme: FilledButtonThemeData(
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
@@ -79,7 +70,6 @@ class MyApp extends StatelessWidget {
           ),
         ),
 
-        // ✅ Chip (뱃지 느낌)
         chipTheme: ChipThemeData(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -90,7 +80,6 @@ class MyApp extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         ),
 
-        // ✅ FAB (가운데 상점 버튼)
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           backgroundColor: const Color(0xFF74D4FF),
           foregroundColor: Colors.white,
@@ -100,8 +89,8 @@ class MyApp extends StatelessWidget {
           ),
         ),
 
-        // ✅ 하단 바(노치 있는 BottomAppBar용)
-        bottomAppBarTheme: const BottomAppBarThemeData(
+        // ⬇️ BottomAppBarThemeData → BottomAppBarTheme
+        bottomAppBarTheme: const BottomAppBarTheme(
           color: Colors.white,
           elevation: 5,
         ),

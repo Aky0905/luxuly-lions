@@ -29,7 +29,7 @@ class MeetupState {
           when: DateTime.now().add(const Duration(days: 2)),
           location: '불광역 2번 출구',
           capacity: 10,
-          joined: 7,
+          joined: 9,
         ),
       ]);
     }
@@ -39,7 +39,17 @@ class MeetupState {
   List<Meetup> get meetups => List.unmodifiable(_meetups);
 
   void add(Meetup m) => _meetups.insert(0, m);
+
   void join(Meetup m) {
-    if (m.joined < m.capacity) m.joined++;
+    if (m.joined < m.capacity) {
+      m.joined++;
+    }
+  }
+
+  // ⬇️ 추가: 참가 취소 메서드
+  void leave(Meetup m) {
+    if (m.joined > 0) {
+      m.joined--;
+    }
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/coupon.dart';
 import '../state/coupon_state.dart';
 import 'mission_verify_screen.dart'; // ✅ 인증 화면
+import '../models/party.dart'; // ✅ Party, Participant
+import 'waiting_room_screen.dart'; // ✅ 대기실 화면
 
 class MissionDetailScreen extends StatefulWidget {
   final String title;
@@ -9,6 +11,7 @@ class MissionDetailScreen extends StatefulWidget {
   final String distance;
   final String timeLimit;
   final String point;
+
   /// "현재/최대" 형식 (예: "2/4")
   final String participants;
 
@@ -40,15 +43,42 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
 
   bool get _isFull => _max > 0 && _now >= _max;
 
-  void _join() {
-    if (_now < _max) {
-      setState(() => _now++);
-      if (_now >= _max) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('정원이 모두 모였어요! 쿠폰을 받을 수 있어요.')),
-        );
-      }
-    }
+  // ✅ 대기실로 이동 (Party의 required: id, dateTime 충족)
+  void _goWaitingRoom() {
+    if (_isFull) return;
+
+    final nextJoined = _now + 1; // 나 포함
+    final capacity = _max == 0 ? 6 : _max; // participants 파싱 실패 대비
+    final nowTs = DateTime.now(); // dateTime
+
+    // 샘플 참가자 목록 (첫 번째는 '나')
+    final people = <Participant>[
+      Participant(name: '나', level: 15, ready: false),
+      for (int i = 0; i < nextJoined - 1; i++)
+        Participant(name: '참가자 ${i + 1}', level: 10 + i, ready: false),
+    ];
+
+    final party = Party(
+      id: 'party-${nowTs.millisecondsSinceEpoch}', // ✅ required
+      title: widget.title,
+      place: widget.place,
+      dateTime: nowTs, // ✅ required
+      capacity: capacity,
+      joined: nextJoined,
+      people: people,
+    );
+
+    setState(() => _now = nextJoined);
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => WaitingRoomScreen(party: party, isLeader: false),
+      ),
+    );
+
+    // Firestore 사용하는 경우:
+    // - 참가 증가/participant 추가를 DB에 반영한 뒤
+    // - party 스냅샷을 WaitingRoomScreen에 전달하도록 변경하세요.
   }
 
   // ✅ 바코드용 코드/ID 생성해서 쿠폰 저장
@@ -86,7 +116,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('미션 인증 완료! +${reward}P 적립')),
       );
-      setState(() {});
+      setState(() {}); // 필요 시 UI 갱신
     }
   }
 
@@ -121,7 +151,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
               ),
               Container(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: const Color(0xFFEDE9FE), // ✅ 연보라 톤 통일
                   borderRadius: BorderRadius.circular(999),
@@ -193,9 +223,9 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
 
           // 액션 버튼
           FilledButton(
-            onPressed: _isFull ? null : _join,
+            onPressed: _isFull ? null : _goWaitingRoom, // ✅ 대기실로 이동
             style:
-            FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
             child: Text(_isFull ? '정원 마감' : '일행 모집 참가하기'),
           ),
           const SizedBox(height: 8),
@@ -204,7 +234,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
           FilledButton.tonal(
             onPressed: _goVerify,
             style:
-            FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
             child: const Text('미션 인증하기'),
           ),
         ],

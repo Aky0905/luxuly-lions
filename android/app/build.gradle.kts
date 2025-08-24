@@ -7,14 +7,14 @@ plugins {
 
 android {
     namespace = "com.example.hahaha"
-    compileSdk = 33           // 직접 숫자로 지정
+    compileSdk = 35             // 직접 숫자로 지정
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.example.hahaha"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 33
-        versionCode = 1
+        versionCode = 1 
         versionName = "1.0.0"
     }
 
