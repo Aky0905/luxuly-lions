@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "948290139673",
+    "project_id": "pot-project-10311",
+    "storage_bucket": "pot-project-10311.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:948290139673:android:ad56e4fff5458bc3545c88",
+        "android_client_info": {
+          "package_name": "com.example.hahaha"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCNTc7A0fmTkiQYSHs1PGAFzm9haKWIrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
