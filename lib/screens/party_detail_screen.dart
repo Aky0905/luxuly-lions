@@ -1,3 +1,4 @@
+//party_detail_screen
 import 'package:flutter/material.dart';
 import '../models/party.dart';
 import 'waiting_room_screen.dart';

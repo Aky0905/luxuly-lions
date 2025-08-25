@@ -1,27 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // ✅ 메일/오류 한국어 설정용
+import 'package:flutter_localizations/flutter_localizations.dart'; // ✅ 한국어 로컬라이제이션
 import 'firebase_options.dart';
 import 'shell.dart';
+import 'ui/login_page.dart';
+import 'ui/signup_step1_page.dart';
+import 'ui/email_login_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // ✅ Firebase 인증 이메일/오류 메시지 한국어
+  FirebaseAuth.instance.setLanguageCode('ko');
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  void _comingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('준비중입니다.')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: '동네 친구',
+
+      // ✅ 한국어 기본, 영어도 지원
+      locale: const Locale('ko', 'KR'),
+      supportedLocales: const [Locale('ko', 'KR'), Locale('en', 'US')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+
       theme: ThemeData(
         useMaterial3: true,
-
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF4FC3F7),
           brightness: Brightness.light,
@@ -95,7 +117,25 @@ class MyApp extends StatelessWidget {
           elevation: 5,
         ),
       ),
-      home: const AppShell(),
+      home: Builder(
+        builder: (context) => LoginPage(
+          onGoogleSignIn: () => _comingSoon(context), // 비활성
+          onKakaoSignIn: () => _comingSoon(context), // 비활성
+          onEmailLogin: () {
+            // ✅ 로그인(이메일/비밀번호) 화면으로 이동
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const EmailLoginPage()),
+            );
+          },
+          onSignUp: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const SignupStep1Page(hideEmail: false),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

@@ -7,24 +7,24 @@ plugins {
 
 android {
     namespace = "com.example.hahaha"
-    compileSdk = 35             // 직접 숫자로 지정
+    compileSdk = 36             // 직접 숫자로 지정
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.example.hahaha"
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 36
         versionCode = 1 
         versionName = "1.0.0"
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     buildTypes {
