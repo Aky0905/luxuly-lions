@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'mission_screen.dart';                 // 지역 미션으로 이동
-import 'location_setting_screen.dart';       // 위치 설정
-import '../state/meetup_state.dart';         // 모임 프리뷰 데이터
-import 'meetups_screen.dart';                // 동네 팟 목록/생성
-import 'meetup_detail_screen.dart';          // 동네 팟 상세
+import 'mission_screen.dart'; // 지역 미션으로 이동
+import 'location_setting_screen.dart'; // 위치 설정
+import '../state/meetup_state.dart'; // 모임 프리뷰 데이터
+import 'meetups_screen.dart'; // 동네 팟 목록/생성
+import 'meetup_detail_screen.dart'; // 동네 팟 상세
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,12 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
     // 홈에서는 검색어로 필터해 최대 5개만 프리뷰
     final meetups = all
         .where((m) {
-      if (_query.trim().isEmpty) return true;
-      final q = _query.toLowerCase();
-      return m.title.toLowerCase().contains(q) ||
-          m.description.toLowerCase().contains(q) ||
-          m.location.toLowerCase().contains(q);
-    })
+          if (_query.trim().isEmpty) return true;
+          final q = _query.toLowerCase();
+          return m.title.toLowerCase().contains(q) ||
+              m.description.toLowerCase().contains(q) ||
+              m.location.toLowerCase().contains(q);
+        })
         .take(5)
         .toList();
 
@@ -61,7 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton.icon(
                 onPressed: () async {
                   final result = await Navigator.of(context).push<String>(
-                    MaterialPageRoute(builder: (_) => const LocationSettingScreen()),
+                    MaterialPageRoute(
+                        builder: (_) => const LocationSettingScreen()),
                   );
                   if (result != null && result.isNotEmpty) {
                     setState(() => _currentArea = result);
@@ -158,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           else
             ...meetups.map(
-                  (m) => Card(
+              (m) => Card(
                 child: ListTile(
                   title: Text(
                     m.title,
@@ -169,7 +170,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   isThreeLine: true,
                   trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: const Color(0xFFEDE9FE),
                       borderRadius: BorderRadius.circular(999),

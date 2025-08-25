@@ -4,7 +4,6 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services") // Firebase 플러그인
 }
-
 android {
     namespace = "com.example.hahaha"
     compileSdk = 36             // 직접 숫자로 지정

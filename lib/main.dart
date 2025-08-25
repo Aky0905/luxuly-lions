@@ -1,21 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // ✅ 메일/오류 한국어 설정용
 import 'package:flutter_localizations/flutter_localizations.dart'; // ✅ 한국어 로컬라이제이션
+import 'package:provider/provider.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
-import 'shell.dart';
 import 'ui/login_page.dart';
 import 'ui/signup_step1_page.dart';
 import 'ui/email_login_page.dart';
+import 'state/area_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  //await FirebaseAppCheck.instance.activate(
+  //androidProvider: AndroidProvider.debug, // 개발/에뮬레이터
+  //appleProvider: AppleProvider.debug,
+  //);
+  //await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
   // ✅ Firebase 인증 이메일/오류 메시지 한국어
   FirebaseAuth.instance.setLanguageCode('ko');
-  runApp(const MyApp());
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint("dotenv load failed: $e");
+  } // .env 파일 로드
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AreaState(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

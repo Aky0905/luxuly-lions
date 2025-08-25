@@ -19,11 +19,11 @@ class _AppShellState extends State<AppShell> {
   int _index = 0;
 
   final _pages = const [
-    HomeScreen(),        // 0
-    MissionScreen(),     // 1
+    HomeScreen(), // 0
+    const MissionScreen(), // 1
     RewardsShopScreen(), // 2 (상점)
-    ProfileScreen(),     // 3
-    SettingsScreen(),    // 4
+    ProfileScreen(), // 3
+    SettingsScreen(), // 4
   ];
 
   void _go(int i) => setState(() => _index = i);
@@ -32,7 +32,6 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_index],
-
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 8,
@@ -101,9 +100,8 @@ class _NavBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isSelected
-        ? Theme.of(context).colorScheme.primary
-        : Colors.black54;
+    final color =
+        isSelected ? Theme.of(context).colorScheme.primary : Colors.black54;
 
     return InkWell(
       onTap: onTap,
